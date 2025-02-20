@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->integer('platinum_visits')->comment('عدد الزيارات للعضوية البلاتينية');
             $table->integer('gold_visits')->comment('عدد الزيارات للعضوية الذهبية');
             $table->integer('silver_visits')->comment('عدد الزيارات للعضوية الفضية');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

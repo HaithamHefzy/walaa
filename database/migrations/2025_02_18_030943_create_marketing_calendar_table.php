@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('message_content')->nullable();
             $table->boolean('is_expired')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

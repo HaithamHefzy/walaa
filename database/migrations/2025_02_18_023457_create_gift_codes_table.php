@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('validity_days')->nullable();
             $table->integer('validity_after_hours')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

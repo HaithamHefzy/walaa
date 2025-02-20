@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('button_type'); // A, B, C
             $table->integer('max_people');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

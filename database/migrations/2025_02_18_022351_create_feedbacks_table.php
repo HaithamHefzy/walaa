@@ -20,6 +20,7 @@ return new class extends Migration
             $table->tinyInteger('value_for_money')->unsigned();
             $table->text('notes')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->softDeletes();
         });
     }
 

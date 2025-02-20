@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->time('created_time');
             $table->enum('usage_status', ['used', 'not_used'])->default('not_used');
+            $table->softDeletes();
         });
     }
 

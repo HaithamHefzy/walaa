@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\UserService;
@@ -29,9 +29,6 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        if (!auth()->user()->can('view users')) {
-            return $this->errorResponse('Unauthorized access', 403);
-        }
 
         $users = $this->userService->getAllUsers(request()->get('per_page'));
         return $this->successResponse(UserResource::collection($users), 'Users retrieved successfully');
@@ -43,9 +40,6 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        if (!auth()->user()->can('create users')) {
-            return $this->errorResponse('Unauthorized access', 403);
-        }
 
         $user = $this->userService->createUser($request->validated());
 
@@ -58,9 +52,6 @@ class UserController extends Controller
      */
     public function show($id): JsonResponse
     {
-        if (!auth()->user()->can('view users')) {
-            return $this->errorResponse('Unauthorized access', 403);
-        }
 
         $user = $this->userService->getUserById($id);
         return $user
@@ -74,9 +65,6 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, $id): JsonResponse
     {
-        if (!auth()->user()->can('edit users')) {
-            return $this->errorResponse('Unauthorized access', 403);
-        }
 
         $user = $this->userService->updateUser($id, $request->validated());
         return $user
@@ -90,9 +78,6 @@ class UserController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        if (!auth()->user()->can('delete users')) {
-            return $this->errorResponse('Unauthorized access', 403);
-        }
 
         return $this->userService->deleteUser($id)
             ? $this->successResponse([], 'User deleted successfully', 200)

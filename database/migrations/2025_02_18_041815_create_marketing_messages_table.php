@@ -22,6 +22,7 @@ return new class extends Migration
             $table->enum('delivery_method', ['whatsapp', 'sms', 'email']);
             $table->enum('status', ['pending', 'sent', 'failed'])->default('pending');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

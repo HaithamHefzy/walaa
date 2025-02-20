@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->integer('number_of_people')->nullable();
             $table->timestamp('created_at')->useCurrent();
+            $table->softDeletes();
         });
     }
 

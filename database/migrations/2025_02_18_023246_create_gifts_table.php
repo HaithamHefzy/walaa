@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->boolean('is_redeemed')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

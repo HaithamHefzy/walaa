@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('discount_type', ['percentage', 'fixed']);
             $table->decimal('discount_value', 8, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
