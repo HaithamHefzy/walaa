@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('customer_name');
             $table->string('phone_number');
-            $table->tinyInteger('food_quality')->unsigned();
-            $table->tinyInteger('service_quality')->unsigned();
-            $table->tinyInteger('value_for_money')->unsigned();
+            $table->tinyInteger('food_quality')->unsigned()->nullable();
+            $table->tinyInteger('service_quality')->unsigned()->nullable();
+            $table->tinyInteger('value_for_money')->unsigned()->nullable();
             $table->text('notes')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
             $table->softDeletes();
         });
     }
