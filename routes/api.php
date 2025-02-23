@@ -61,4 +61,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('call-button-settings', CallButtonSettingController::class)->only(['index','store','destroy']);
     Route::get('call-button-settings/suitable', [CallButtonSettingController::class, 'findSuitable'])
         ->name('call-button-settings.suitable');
+
 });
