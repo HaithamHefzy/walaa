@@ -1,8 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController,FeedbackController,FeedBackManagerController,
-    UserController,GiftCodeController,GiftController,DiscountCodeController,CouponsController};
+use App\Http\Controllers\{AuthController,
+    CallButtonSettingController,
+    ClientController,
+    FeedbackController,
+    FeedBackManagerController,
+    MembershipSettingController,
+    TableController,
+    UserController,
+    GiftCodeController,
+    GiftController,
+    DiscountCodeController,
+    CouponsController,
+    VisitController};
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -50,4 +61,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('call-button-settings', CallButtonSettingController::class)->only(['index','store','destroy']);
     Route::get('call-button-settings/suitable', [CallButtonSettingController::class, 'findSuitable'])
         ->name('call-button-settings.suitable');
+
 });
