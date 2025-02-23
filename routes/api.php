@@ -24,4 +24,30 @@ Route::middleware(['auth:api'])->group(function () {
     // coupons
     Route::apiResource('discount-codes',DiscountCodeController::class);
     Route::apiResource('coupons',CouponsController::class);
+
+    // Client Endpoints (clients are used, not customers)
+    Route::apiResource('clients', ClientController::class)->only(['index','store','destroy','show']);
+    // create client visit
+    Route::post('client-visit', [ClientController::class, 'store'])->name('client.visit.store');
+
+
+    // Visit Endpoints
+    Route::apiResource('visits', VisitController::class)->only(['index','store','destroy']);
+    Route::post('visits/{visitId}/assign-table', [VisitController::class, 'assignTable'])
+        ->name('visits.assignTable');
+
+    // Table Endpoints
+    Route::apiResource('tables', TableController::class)->only(['index','store','destroy']);
+    Route::post('tables/{tableId}/free', [TableController::class, 'free'])
+        ->name('tables.free');
+
+    // Membership Settings Endpoints
+    Route::apiResource('membership-settings', MembershipSettingController::class)->only(['index','store','destroy']);
+    Route::get('membership-settings/current', [MembershipSettingController::class, 'current'])
+        ->name('membership-settings.current');
+
+    // Call Button Settings Endpoints
+    Route::apiResource('call-button-settings', CallButtonSettingController::class)->only(['index','store','destroy']);
+    Route::get('call-button-settings/suitable', [CallButtonSettingController::class, 'findSuitable'])
+        ->name('call-button-settings.suitable');
 });
