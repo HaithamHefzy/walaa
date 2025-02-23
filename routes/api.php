@@ -1,8 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController,FeedbackController,FeedBackManagerController,
-    UserController,GiftCodeController,GiftController,DiscountCodeController,CouponsController};
+use App\Http\Controllers\{AuthController,
+    CallButtonSettingController,
+    ClientController,
+    FeedbackController,
+    FeedBackManagerController,
+    MembershipSettingController,
+    TableController,
+    UserController,
+    GiftCodeController,
+    GiftController,
+    DiscountCodeController,
+    CouponsController,
+    VisitController};
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
