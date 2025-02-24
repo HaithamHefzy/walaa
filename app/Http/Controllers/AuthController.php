@@ -44,7 +44,7 @@ class AuthController extends Controller
         return $this->successResponse([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth('api')->factory()->getTTL() * 60,
+            'expires_in' => 604800,
             'user' => new \App\Http\Resources\UserResource($user),
         ], $message);
     }

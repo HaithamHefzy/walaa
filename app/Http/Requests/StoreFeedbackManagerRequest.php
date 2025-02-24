@@ -21,8 +21,8 @@ class StoreFeedBackManagerRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:FeedBack_managers',
-            'phone_number' => 'required|string|max:20|unique:FeedBack_managers',
+            'email' => 'nullable|email|unique:feedback_managers',
+            'phone_number' => 'required|string|max:20|unique:feedback_managers',
         ];
     }
 }

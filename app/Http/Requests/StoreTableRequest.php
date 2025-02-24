@@ -18,7 +18,7 @@ class StoreTableRequest extends FormRequest
     {
         return [
             'room_number'   => 'required|integer|unique:tables,room_number',
-            'room_capacity' => 'required|integer|min:1',
+            'table_capacity' => 'required|integer|min:1',
             'table_number'  => 'required|integer',
             'status'        => 'required|in:available,unavailable',
         ];

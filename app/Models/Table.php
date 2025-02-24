@@ -17,7 +17,7 @@ class Table extends Model
 
     protected $fillable = [
         'room_number',
-        'room_capacity',
+        'table_capacity',
         'table_number',
         'status',
     ];

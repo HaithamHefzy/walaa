@@ -6,7 +6,8 @@ use App\Repositories\CallButtonSettingRepository;
 
 /**
  * CallButtonSettingService
- * Encapsulates business logic for call button settings.
+ * Encapsulates business logic for call button settings,
+ * focusing on retrieving and updating multiple buttons at once.
  */
 class CallButtonSettingService
 {
@@ -14,6 +15,8 @@ class CallButtonSettingService
 
     /**
      * Inject the CallButtonSettingRepository.
+     *
+     * @param CallButtonSettingRepository $buttonRepo
      */
     public function __construct(CallButtonSettingRepository $buttonRepo)
     {
@@ -22,6 +25,9 @@ class CallButtonSettingService
 
     /**
      * Retrieve all call button settings with optional pagination.
+     *
+     * @param int|null $perPage
+     * @return mixed
      */
     public function getAllCallButtons($perPage = null)
     {
@@ -29,26 +35,27 @@ class CallButtonSettingService
     }
 
     /**
-     * Create a new call button setting record.
-     */
-    public function createCallButton(array $data)
-    {
-        return $this->buttonRepo->create($data);
-    }
-
-    /**
-     * Delete a call button setting by ID.
-     */
-    public function deleteCallButton($id)
-    {
-        return $this->buttonRepo->delete($id);
-    }
-
-    /**
-     * Optionally find a suitable button for a given number of people.
+     * Find a suitable button for a given number of people (optional logic).
+     *
+     * @param int $peopleCount
+     * @return \App\Models\CallButtonSetting|null
      */
     public function findSuitableButton($peopleCount)
     {
         return $this->buttonRepo->findSuitableButton($peopleCount);
+    }
+
+    /**
+     * Update multiple call button settings at once.
+     * Example input: ['A' => 3, 'B' => 5, 'C' => 7]
+     *
+     * @param array $buttonsData
+     * @return void
+     */
+    public function updateMultipleButtons(array $buttonsData): void
+    {
+        foreach ($buttonsData as $buttonType => $maxPeople) {
+            $this->buttonRepo->updateButton($buttonType, (int)$maxPeople);
+        }
     }
 }

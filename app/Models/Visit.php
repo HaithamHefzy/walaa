@@ -20,6 +20,7 @@ class Visit extends Model
         'source',
         'status',
         'table_id',
+        'waiting_number',
     ];
 
     /**
