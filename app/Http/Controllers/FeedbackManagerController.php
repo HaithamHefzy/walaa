@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\FeedbackManagerService;
-use App\Http\Requests\StoreFeedBackManagerRequest;
+use App\Http\Requests\StoreFeedbackManagerRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class FeedbackManagerController extends Controller
     /**
      * POST /feedback-managers
      */
-    public function store(StoreFeedBackManagerRequest $request): JsonResponse
+    public function store(StoreFeedbackManagerRequest $request): JsonResponse
     {
         $manager = $this->managerService->createManager($request->validated());
 

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\CallButtonSettingController;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         // Run Roles and Permissions Seeder
         $this->call(RolesAndPermissionsSeeder::class);
+        $this->call(CallButtonSettingsSeeder::class);
 
         // Create a test admin user if it doesn't exist
         $adminUser = User::firstOrCreate(

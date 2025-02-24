@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TableService;
 use App\Http\Requests\StoreTableRequest;
+use App\Services\TableService;
 use App\Http\Resources\TableResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;

@@ -30,6 +30,7 @@ return new class extends Migration
 
             // Status of the visit: waiting, called, done
             $table->enum('status', ['waiting', 'called', 'done'])->default('waiting')->comment('Current status of the visit');
+            $table->unsignedInteger('waiting_number')->nullable();
 
             // Optional table assigned to this visit
             $table->foreignId('table_id')
