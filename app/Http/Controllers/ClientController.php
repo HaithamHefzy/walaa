@@ -79,6 +79,15 @@ class ClientController extends Controller
         // Create the visit record
         $visit = Visit::create($visitData);
 
+        // Calculate the waiting_number for today
+        $today = now()->format('Y-m-d');
+        $maxToday = \App\Models\Visit::whereDate('created_at', $today)->max('waiting_number');
+        $nextNumber = $maxToday ? $maxToday + 1 : 1;
+
+        // Save the waiting_number in the visit
+        $visit->waiting_number = $nextNumber;
+        $visit->save();
+
         // Return combined response with client and visit data using resources
         return $this->successResponse(
             [

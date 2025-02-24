@@ -14,7 +14,7 @@ class TableResource extends JsonResource
         return [
             'id'            => $this->id,
             'room_number'   => $this->room_number,
-            'room_capacity' => $this->room_capacity,
+            'table_capacity' => $this->table_capacity,
             'table_number'  => $this->table_number,
             'status'        => $this->status,
             'created_at'    => $this->created_at,

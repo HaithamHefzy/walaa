@@ -47,6 +47,18 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('visits/{visitId}/assign-table', [VisitController::class, 'assignTable'])
         ->name('visits.assignTable');
 
+    // Call by button (A,B,C,...)
+    Route::post('visits/call-button/{buttonType}', [VisitController::class, 'callButton'])
+        ->name('visits.callButton');
+
+    // Special call
+    Route::post('visits/special-call/{visitId}', [VisitController::class, 'specialCall'])
+        ->name('visits.specialCall');
+
+    // Waiting visits
+    Route::get('visits/waiting', [VisitController::class, 'getWaitingVisits'])
+        ->name('visits.getWaiting');
+
     // Table Endpoints
     Route::apiResource('tables', TableController::class)->only(['index','store','destroy']);
     Route::post('tables/{tableId}/free', [TableController::class, 'free'])
@@ -57,9 +69,16 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('membership-settings/current', [MembershipSettingController::class, 'current'])
         ->name('membership-settings.current');
 
-    // Call Button Settings Endpoints
-    Route::apiResource('call-button-settings', CallButtonSettingController::class)->only(['index','store','destroy']);
+    // Call Button Settings: index, findSuitable, updateMultiple
+    Route::get('call-button-settings', [CallButtonSettingController::class, 'index'])
+        ->name('call-button-settings.index');
+
     Route::get('call-button-settings/suitable', [CallButtonSettingController::class, 'findSuitable'])
         ->name('call-button-settings.suitable');
+
+    // Update multiple (A, B, C) in one request
+    Route::post('call-button-settings/update-multiple', [CallButtonSettingController::class, 'updateMultiple'])
+        ->name('call-button-settings.updateMultiple');
+
 
 });
