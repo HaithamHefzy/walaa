@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Codes;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreDiscountCodeRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreDiscountCodeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,9 @@ class StoreDiscountCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code' => ['required',Rule::unique('discount_codes')->whereNull('deleted_at')],
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric'
         ];
     }
 }

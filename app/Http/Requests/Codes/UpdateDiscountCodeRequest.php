@@ -11,7 +11,7 @@ class UpdateDiscountCodeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,11 @@ class UpdateDiscountCodeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = Request::segment('3');
         return [
-            //
+            'code' => "required|unique:gift_codes,code,{$id},id,deleted_at,NULL",
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric'
         ];
     }
 }

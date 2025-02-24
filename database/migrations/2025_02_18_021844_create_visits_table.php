@@ -30,14 +30,6 @@ return new class extends Migration
 
             // Status of the visit: waiting, called, done
             $table->enum('status', ['waiting', 'called', 'done'])->default('waiting')->comment('Current status of the visit');
-
-            // Optional table assigned to this visit
-            $table->foreignId('table_id')
-                ->nullable()
-                ->constrained('tables')
-                ->onDelete('set null')
-                ->comment('If a table is assigned, store it here');
-
             $table->softDeletes()->comment('Soft delete support');
             $table->timestamps();
         });

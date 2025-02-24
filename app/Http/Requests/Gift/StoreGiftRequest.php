@@ -11,7 +11,7 @@ class StoreGiftRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreGiftRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'gift_code_id' => 'required|numeric|exists:gift_codes,id,deleted_at,NULL',
+            'client_name' => 'required|string|max:255',
+            'client_phone' => 'required|numeric',
+            'friend_name' => 'required|string|max:255',
+            'friend_phone' => 'required|numeric',
+            'message' => 'required|string',
+            'is_redeemed' => 'required|numeric'
         ];
     }
 }
