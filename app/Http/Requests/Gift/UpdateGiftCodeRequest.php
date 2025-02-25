@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Gift;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class UpdateGiftCodeRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateGiftCodeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,13 @@ class UpdateGiftCodeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = Request::segment('3');
         return [
-            //
+            'code' => "required|unique:gift_codes,code,{$id},id,deleted_at,NULL",
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric',
+            'validity_days' => 'required|numeric',
+            'validity_after_hours' => 'required|numeric'
         ];
     }
 }

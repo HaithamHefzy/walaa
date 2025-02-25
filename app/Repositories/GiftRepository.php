@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Gift;
+use Carbon\Carbon;
 
 class GiftRepository
 {
@@ -41,6 +42,43 @@ class GiftRepository
             return $gift;
         }
         return null;
+    }
+
+    /**
+     * Update gift status.
+    */
+    public function useTheGift($data)
+    {
+        $gift = Gift::where('friend_phone',$data['friend_phone'])->whereHas('giftCode',function($code) use($data){
+            $code->where('code',$data['code']);
+        })->first();
+
+        if ($gift) {
+            if($gift->is_redeemed == 1){
+                return 'The gift has already been redeemed before';
+            }else{
+
+                $giftCode = $gift->giftCode;
+                $createdAt = Carbon::parse($giftCode->created_at);
+                $now = Carbon::now();
+
+                $canUseAfter = $createdAt->copy()->addHours($giftCode->validity_after_hours);
+                $canUseNow = $now->greaterThanOrEqualTo($canUseAfter); 
+
+                $expiresAt = $createdAt->copy()->addDays($giftCode->validity_days);
+                $isStillValid = $now->lessThanOrEqualTo($expiresAt);
+
+                if (!$canUseNow) {
+                    return "The gift code is not yet available for use.";
+                } elseif (!$isStillValid) {
+                    return "The gift code has expired.";
+                } else {
+                    $gift->update(['is_redeemed' => 1]);
+                    return 'The gift has been successfully redeemed';
+                }
+            }
+        }
+        return false;
     }
 
     /**

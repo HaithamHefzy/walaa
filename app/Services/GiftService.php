@@ -49,6 +49,14 @@ class GiftService
     }
 
     /**
+     * change existing gift status.
+     */
+    public function useTheGift($data)
+    {
+        return $this->giftRepository->useTheGift($data);
+    }
+
+    /**
      * Delete a gift by ID.
      */
     public function deleteGift($id)

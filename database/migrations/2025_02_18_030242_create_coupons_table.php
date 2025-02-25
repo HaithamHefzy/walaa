@@ -18,9 +18,8 @@ return new class extends Migration
             $table->string('recipient_name');
             $table->string('recipient_phone');
             $table->foreignId('discount_code_id')->constrained('discount_codes')->onDelete('cascade');
-            $table->timestamp('created_at')->useCurrent();
-            $table->time('created_time');
-            $table->enum('usage_status', ['used', 'not_used'])->default('not_used');
+            $table->enum('usage_status', ['used','not_used'])->default('not_used');
+            $table->timestamps();
             $table->softDeletes();
         });
     }

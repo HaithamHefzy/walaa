@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Gift;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreGiftCodeRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreGiftCodeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,11 @@ class StoreGiftCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'code' => ['required',Rule::unique('gift_codes')->whereNull('deleted_at')],
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric',
+            'validity_days' => 'required|numeric',
+            'validity_after_hours' => 'required|numeric'
         ];
     }
 }

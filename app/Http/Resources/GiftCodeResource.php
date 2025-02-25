@@ -14,6 +14,13 @@ class GiftCodeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'discount_type' => $this->discount_type,
+            'discount_value' => $this->discount_value,
+            'validity_days' => $this->validity_days,
+            'validity_after_hours' => $this->validity_after_hours
+        ];
     }
 }

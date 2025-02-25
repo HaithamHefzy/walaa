@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\CouponService;
-use App\Http\Requests\Codes\{StoreCouponRequest,UpdateCouponRequest};
+use App\Http\Requests\Codes\{StoreCouponRequest,UpdateCouponRequest,CodeRequest};
 use App\Http\Resources\CouponResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -62,6 +62,17 @@ class CouponsController extends Controller
         return $coupon
             ? $this->successResponse(new CouponResource($coupon), 'Coupon updated successfully')
             : $this->errorResponse('Coupon not found', 404);
+    }
+
+    /**
+     * Update existing coupon status.
+     */
+    public function useTheCoupon(CodeRequest $codeRequest)
+    {
+        $response = $this->couponService->useTheCoupon($codeRequest->validated());
+        return $response
+            ? $this->successResponse([],$response)
+            : $this->errorResponse('There are no coupons for this code', 404);
     }
 
     /**

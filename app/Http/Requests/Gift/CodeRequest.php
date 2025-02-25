@@ -4,7 +4,7 @@ namespace App\Http\Requests\Gift;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateGiftRequest extends FormRequest
+class CodeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,8 @@ class UpdateGiftRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'gift_code_id' => 'required|numeric|exists:gift_codes,id,deleted_at,NULL',
-            'client_name' => 'required|string|max:255',
-            'client_phone' => 'required|numeric',
-            'friend_name' => 'required|string|max:255',
             'friend_phone' => 'required|numeric',
-            'message' => 'required|string'
+            'code' => 'required'
         ];
     }
 }

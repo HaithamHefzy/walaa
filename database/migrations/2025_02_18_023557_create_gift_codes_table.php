@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('gift_codes', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->enum('discount_type', ['percentage', 'fixed']);
+            $table->string('code')->nullable();
+            $table->enum('discount_type',['percentage','fixed']);
             $table->decimal('discount_value', 8, 2);
             $table->integer('validity_days')->nullable();
             $table->integer('validity_after_hours')->nullable();
@@ -22,7 +22,6 @@ return new class extends Migration
             $table->softDeletes();
         });
     }
-
 
     /**
      * Reverse the migrations.

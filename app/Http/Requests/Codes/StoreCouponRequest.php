@@ -11,7 +11,7 @@ class StoreCouponRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class StoreCouponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'discount_code_id' => 'required|numeric|exists:discount_codes,id,deleted_at,NULL',
+            'client_name' => 'required|string|max:255',
+            'client_phone' => 'required|numeric',
+            'recipient_name' => 'required|string|max:255',
+            'recipient_phone' => 'required|numeric',
+            //'created_time' => 'required'
         ];
     }
 }
