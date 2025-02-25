@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Coupon;
+use Carbon\Carbon;
 
 class CouponRepository
 {
@@ -41,6 +42,43 @@ class CouponRepository
             return $coupon;
         }
         return null;
+    }
+
+    /**
+     * Update coupon status.
+    */
+    public function useTheCoupon($data)
+    {
+        $coupon = Coupon::where('recipient_phone',$data['recipient_phone'])->whereHas('discountCode',function($code) use($data){
+            $code->where('code',$data['code']);
+        })->first();
+
+        if ($coupon) {
+            if($coupon->usage_status == 'used'){
+                return 'The coupon has already been used before';
+            }else{
+
+                $discountCode = $coupon->discountCode;
+                $createdAt = Carbon::parse($discountCode->created_at);
+                $now = Carbon::now();
+
+                $canUseAfter = $createdAt->copy()->addHours($discountCode->validity_after_hours);
+                $canUseNow = $now->greaterThanOrEqualTo($canUseAfter); 
+
+                $expiresAt = $createdAt->copy()->addDays($discountCode->validity_days);
+                $isStillValid = $now->lessThanOrEqualTo($expiresAt);
+
+                if (!$canUseNow) {
+                    return "The coupon code is not yet available for use.";
+                } elseif (!$isStillValid) {
+                    return "The coupon code has expired.";
+                } else {
+                    $coupon->update(['usage_status' => 'used']);
+                    return 'The coupon has been used successfully';
+                }
+            }
+        }
+        return false;
     }
 
     /**

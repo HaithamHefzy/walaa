@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Codes;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
 
 class UpdateDiscountCodeRequest extends FormRequest
 {
@@ -23,9 +24,11 @@ class UpdateDiscountCodeRequest extends FormRequest
     {
         $id = Request::segment('3');
         return [
-            'code' => "required|unique:gift_codes,code,{$id},id,deleted_at,NULL",
+            'code' => "required|unique:discount_codes,code,{$id},id,deleted_at,NULL",
             'discount_type' => 'required|in:percentage,fixed',
-            'discount_value' => 'required|numeric'
+            'discount_value' => 'required|numeric',
+            'validity_days' => 'required|numeric',
+            'validity_after_hours' => 'required|numeric'
         ];
     }
 }

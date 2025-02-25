@@ -27,7 +27,7 @@ class UpdateCouponRequest extends FormRequest
             'client_phone' => 'required|numeric',
             'recipient_name' => 'required|string|max:255',
             'recipient_phone' => 'required|numeric',
-            'created_time' => 'required'
+            //'created_time' => 'required'
         ];
     }
 }

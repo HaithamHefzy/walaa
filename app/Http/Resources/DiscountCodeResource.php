@@ -18,7 +18,9 @@ class DiscountCodeResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'discount_type' => $this->discount_type,
-            'discount_value' => $this->discount_value
+            'discount_value' => $this->discount_value,
+            'validity_days' => $this->validity_days,
+            'validity_after_hours' => $this->validity_after_hours
         ];
     }
 }

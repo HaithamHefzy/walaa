@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\GiftService;
-use App\Http\Requests\Gift\{StoreGiftRequest,UpdateGiftRequest};
+use App\Http\Requests\Gift\{StoreGiftRequest,UpdateGiftRequest,CodeRequest};
 use App\Http\Resources\GiftResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -62,6 +62,17 @@ class GiftController extends Controller
         return $gift
             ? $this->successResponse(new GiftResource($gift), 'Gift updated successfully')
             : $this->errorResponse('Gift not found', 404);
+    }
+
+    /**
+     * Update existing gift status.
+     */
+    public function useTheGift(CodeRequest $codeRequest)
+    {
+        $response = $this->giftService->useTheGift($codeRequest->validated());
+        return $response
+            ? $this->successResponse([],$response)
+            : $this->errorResponse('There are no gifts for this code', 404);
     }
 
     /**

@@ -22,7 +22,7 @@ class GiftResource extends JsonResource
             'friend_name' => $this->friend_name,
             'friend_phone' => $this->friend_phone,
             'message' => $this->message,
-            'is_redeemed' => $this->is_redeemed
+            'is_redeemed' => $this->is_redeemed ?? 0
         ];
     }
 }

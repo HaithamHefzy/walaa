@@ -20,9 +20,8 @@ class CouponResource extends JsonResource
             'client_phone' => $this->client_phone,
             'recipient_name' => $this->recipient_name,
             'recipient_phone' => $this->recipient_phone,
-            'discount_code_id' => $this->discount_code_id,
-            'created_time' => $this->created_time,
-            'usage_status' => $this->usage_status
+            'discount_code' => $this->discountCode?->code,
+            'usage_status' => $this->usage_status ?? 'not_used'
         ];
     }
 }

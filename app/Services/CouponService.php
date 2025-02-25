@@ -49,6 +49,14 @@ class CouponService
     }
 
     /**
+     * change existing coupon status.
+     */
+    public function useTheCoupon($data)
+    {
+        return $this->couponRepository->useTheCoupon($data);
+    }
+
+    /**
      * Delete a coupon by ID.
      */
     public function deleteCoupon($id)

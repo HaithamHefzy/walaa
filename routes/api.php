@@ -32,9 +32,11 @@ Route::middleware(['auth:api'])->group(function () {
     // gifts
     Route::apiResource('gift-codes',GiftCodeController::class);
     Route::apiResource('gifts',GiftController::class);
+    Route::post('use-gifts',[GiftController::class,'useTheGift'])->name('gifts.use');
     // coupons
     Route::apiResource('discount-codes',DiscountCodeController::class);
     Route::apiResource('coupons',CouponsController::class);
+    Route::post('use-coupons',[CouponsController::class,'useTheCoupon'])->name('coupons.use');
 
     // Client Endpoints (clients are used, not customers)
     Route::apiResource('clients', ClientController::class)->only(['index','store','destroy','show']);

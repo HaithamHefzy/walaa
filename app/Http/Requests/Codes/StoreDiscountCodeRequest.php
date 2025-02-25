@@ -25,7 +25,9 @@ class StoreDiscountCodeRequest extends FormRequest
         return [
             'code' => ['required',Rule::unique('discount_codes')->whereNull('deleted_at')],
             'discount_type' => 'required|in:percentage,fixed',
-            'discount_value' => 'required|numeric'
+            'discount_value' => 'required|numeric',
+            'validity_days' => 'required|numeric',
+            'validity_after_hours' => 'required|numeric'
         ];
     }
 }

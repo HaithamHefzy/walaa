@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('discount_codes', function (Blueprint $table) {
+        Schema::create('gift_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
-            $table->enum('discount_type', ['percentage', 'fixed']);
+            $table->enum('discount_type',['percentage','fixed']);
             $table->decimal('discount_value', 8, 2);
             $table->integer('validity_days')->nullable();
             $table->integer('validity_after_hours')->nullable();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('discount_codes');
+        Schema::dropIfExists('gift_codes');
     }
 };

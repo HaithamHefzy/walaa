@@ -27,8 +27,7 @@ class StoreGiftRequest extends FormRequest
             'client_phone' => 'required|numeric',
             'friend_name' => 'required|string|max:255',
             'friend_phone' => 'required|numeric',
-            'message' => 'required|string',
-            'is_redeemed' => 'required|numeric'
+            'message' => 'required|string'
         ];
     }
 }
