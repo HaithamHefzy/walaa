@@ -45,6 +45,18 @@ Route::middleware(['auth:api'])->group(function () {
     // create client visit
     Route::post('client-visit', [ClientController::class, 'store'])->name('client.visit.store');
 
+    // GET /clients/{id}/membership
+    Route::get('clients/{id}/membership', [ClientController::class, 'membership'])
+        ->name('clients.membership');
+
+    // GET /clients/{id}/last-visit
+    Route::get('clients/{id}/last-visit', [ClientController::class, 'lastVisit'])
+        ->name('clients.lastVisit');
+
+    // GET /clients/{id}/profile (new)
+    Route::get('clients/{id}/profile', [ClientController::class, 'profile'])
+        ->name('clients.profile');
+
 
     // Visit Endpoints
     Route::apiResource('visits', VisitController::class)->only(['index','store','destroy']);

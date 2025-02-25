@@ -44,7 +44,6 @@ class ClientController extends Controller
         );
     }
 
-
     /**
      * Create or retrieve a client and create a visit record.
      *
@@ -81,7 +80,7 @@ class ClientController extends Controller
 
         // Calculate the waiting_number for today
         $today = now()->format('Y-m-d');
-        $maxToday = \App\Models\Visit::whereDate('created_at', $today)->max('waiting_number');
+        $maxToday = Visit::whereDate('created_at', $today)->max('waiting_number');
         $nextNumber = $maxToday ? $maxToday + 1 : 1;
 
         // Save the waiting_number in the visit
@@ -99,13 +98,12 @@ class ClientController extends Controller
         );
     }
 
-
     /**
-     * ٍshow /clients
+     * GET /clients/{id}
+     * Retrieve a specific client by ID.
      */
     public function show($id): JsonResponse
     {
-        // Get Client
         $client = $this->clientService->find($id);
 
         if (!$client) {
@@ -156,4 +154,20 @@ class ClientController extends Controller
         }
         return $this->successResponse(['last_visit' => $date], 'Last visit date retrieved');
     }
+
+    /**
+     * GET /clients/{id}/profile
+     * Retrieve a full profile of the client, including membership and visits.
+     */
+    public function profile($id): JsonResponse
+    {
+        $profileData = $this->clientService->getClientProfile($id);
+
+        if (!$profileData) {
+            return $this->errorResponse('Client not found', 404);
+        }
+
+        return $this->successResponse($profileData, 'Client profile retrieved successfully');
+    }
+
 }
