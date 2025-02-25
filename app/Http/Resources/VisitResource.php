@@ -46,9 +46,10 @@ class VisitResource extends JsonResource
             'waiting_number'   => $this->waiting_number,  // The daily reset number
             'status'           => $this->status,
             'source'           => $this->source,
-            'call_button_type' => $classification,         // dynamic classification
+            'call_button_type' => $classification,
             'time_since'       => $timeSince,              // e.g. "16 minutes ago"
-            'display_label'    => $displayLabel            // e.g. "A 1 (3 أشخاص) - 15 دقيقة"
+            'display_label'    => $displayLabel,         // e.g. "A 1 (3 أشخاص) - 15 دقيقة"
+             'client'           => new \App\Http\Resources\ClientResource($this->client),
         ];
     }
 }

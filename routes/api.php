@@ -4,9 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{AuthController,
     CallButtonSettingController,
     ClientController,
+    DashboardController,
     FeedbackController,
-    FeedBackManagerController,
+    FeedbackManagerController,
     MembershipSettingController,
+    ReportsController,
     TableController,
     UserController,
     GiftCodeController,
@@ -59,6 +61,13 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('visits/waiting', [VisitController::class, 'getWaitingVisits'])
         ->name('visits.getWaiting');
 
+    // Statistics endpoint
+    Route::get('visits/stats', [VisitController::class, 'stats'])
+        ->name('visits.stats');
+     // get the best client
+    Route::get('best-client', [VisitController::class, 'bestClient'])->name('best-client.index');
+
+
     // Table Endpoints
     Route::apiResource('tables', TableController::class)->only(['index','store','destroy']);
     Route::post('tables/{tableId}/free', [TableController::class, 'free'])
@@ -68,6 +77,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('membership-settings', MembershipSettingController::class)->only(['index','store','destroy']);
     Route::get('membership-settings/current', [MembershipSettingController::class, 'current'])
         ->name('membership-settings.current');
+    Route::post('membership-settings/update-multiple', [MembershipSettingController::class, 'updateMultiple']);
+
 
     // Call Button Settings: index, findSuitable, updateMultiple
     Route::get('call-button-settings', [CallButtonSettingController::class, 'index'])
@@ -80,5 +91,13 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('call-button-settings/update-multiple', [CallButtonSettingController::class, 'updateMultiple'])
         ->name('call-button-settings.updateMultiple');
 
+    // Last Called Visit
+    Route::get('visits/last-called', [VisitController::class, 'lastCalled'])
+        ->name('visits.lastCalled');
 
+    Route::get('dashboard/stats', [DashboardController::class, 'stats'])
+        ->name('dashboard.stats');
+
+    // Reports Endpoint
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
 });

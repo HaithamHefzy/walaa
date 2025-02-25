@@ -11,9 +11,8 @@ use Illuminate\Http\Request;
 
 /**
  * VisitController
- * Handles HTTP requests for visits,
- * including creating a visit, assigning a table,
- * calling by button (A,B,C), and special call.
+ * Handles HTTP requests for visits, including creating a visit,
+ * assigning a table, calling by button (A,B,C), and special call.
  */
 class VisitController extends Controller
 {
@@ -61,8 +60,6 @@ class VisitController extends Controller
     {
         $visit = $this->visitService->createVisit($request->validated());
 
-        // If createVisit returns a Visit model, it's successful.
-        // Otherwise, if it returns a JSON response or array, handle accordingly.
         if ($visit instanceof \App\Models\Visit) {
             return $this->successResponse(
                 new VisitResource($visit),
@@ -71,12 +68,10 @@ class VisitController extends Controller
             );
         }
 
-        // If there's an error scenario, you might handle it here:
         if (is_array($visit) && isset($visit['message'])) {
             return $this->errorResponse($visit['message'], 400);
         }
 
-        // Fallback
         return $this->errorResponse('Could not create visit', 400);
     }
 
@@ -126,17 +121,18 @@ class VisitController extends Controller
             return $this->errorResponse('Too many people for this table', 400);
         }
 
-        // If assigned successfully
         return $this->successResponse(null, 'Table assigned successfully');
     }
 
     /**
      * POST /visits/call-button/{buttonType}
-     * Calls the earliest waiting visit for the given button type (A,B,C),
-     * requiring a table_id in the request body.
+     * Call the earliest waiting visit for the given button type (A, B, C),
+     * optionally with a table assignment.
+     * If table_id is provided in the request body, it will be used;
+     * otherwise, the visit will be called without table assignment.
      *
-     * Example: POST /visits/call-button/A
-     * Body: { "table_id": 5 }
+     * Example: POST {{base_url}}/api/visits/call-button/A
+     * Body (raw JSON): { "table_id": 5 }  // optional
      *
      * @param string $buttonType
      * @param Request $request
@@ -156,20 +152,23 @@ class VisitController extends Controller
 
     /**
      * POST /visits/special-call/{visitId}
-     * Special call for any waiting visit by ID, ignoring the queue.
-     * Table assignment is optional in special call.
+     * Special call for any waiting visit by ID, bypassing the queue.
+     * Table assignment is optional.
+     *
+     * Example: POST {{base_url}}/api/visits/special-call/10
+     * Body (raw JSON): { "table_id": 3 }  // optional
      *
      * @param int $visitId
+     * @param Request $request
      * @return JsonResponse
      */
     public function specialCall($visitId, Request $request): JsonResponse
     {
-        // Retrieve optional table_id from the request body
         $tableId = $request->input('table_id');
         $result = $this->visitService->specialCall($visitId, $tableId);
 
         if ($result['status'] === 'error') {
-            return $this->errorResponse($result['message'], 404);
+            return $this->errorResponse($result['message'], 400);
         }
 
         return $this->successResponse(null, $result['message'], 200);
@@ -178,11 +177,13 @@ class VisitController extends Controller
     /**
      * GET /visits/waiting
      * Retrieve all visits that are currently in waiting status,
-     * including time since creation and optional classification.
+     * including time since creation and dynamic classification.
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function getWaitingVisits(Request $request): JsonResponse
     {
-        // get the waiting list visiting
         $visits = \App\Models\Visit::where('status', 'waiting')
             ->orderBy('created_at', 'asc')
             ->get();
@@ -191,6 +192,84 @@ class VisitController extends Controller
             \App\Http\Resources\VisitResource::collection($visits),
             'Waiting visits retrieved successfully'
         );
+    }
+
+    /**
+     * GET /visits/last-called
+     * Retrieve the most recently called visit (the last one with status = 'called').
+     *
+     * @return JsonResponse
+     */
+    public function lastCalled(): JsonResponse
+    {
+        // Find the most recent visit with status 'called'
+        $visit = \App\Models\Visit::where('status', 'called')
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        if (!$visit) {
+            return $this->errorResponse('No called visit found', 404);
+        }
+
+        // Return the visit data using VisitResource
+        return $this->successResponse(
+            new \App\Http\Resources\VisitResource($visit),
+            'Last called visit retrieved successfully'
+        );
+    }
+
+    /**
+     * GET /visits/stats
+     * Retrieve various statistics for the dashboard, such as:
+     * - Number of waiting visits
+     * - Number of called visits
+     * - Number of available tables
+     * - Number of occupied tables
+     */
+    public function stats(): JsonResponse
+    {
+        // Example queries:
+        $waitingVisitsCount = \App\Models\Visit::where('status', 'waiting')->count();
+        $calledVisitsCount  = \App\Models\Visit::where('status', 'called')->count();
+
+        // If you have a Table model to check availability
+        $availableTablesCount = \App\Models\Table::where('status', 'available')->count();
+        $unavailableTablesCount = \App\Models\Table::where('status', 'unavailable')->count();
+
+        // Build the response data array
+        $data = [
+            'waiting_visits'       => $waitingVisitsCount,
+            'called_visits'        => $calledVisitsCount,
+            'available_tables'     => $availableTablesCount,
+            'unavailable_tables'   => $unavailableTablesCount,
+        ];
+
+        return $this->successResponse($data, 'Statistics retrieved successfully');
+    }
+
+    /**
+     * GET /best-client
+     * Retrieve the best client by number of visits.
+     *
+     * @return JsonResponse
+     */
+    public function bestClient(): JsonResponse
+    {
+        // Use withCount to get the count of visits for each client.
+        $bestClient = \App\Models\Client::withCount('visits')
+            ->orderBy('visits_count', 'desc')
+            ->first();
+
+        if (!$bestClient) {
+            return $this->errorResponse('No clients found', 404);
+        }
+
+        $data = [
+            'name'         => $bestClient->name,
+            'total_visits' => $bestClient->visits_count,
+        ];
+
+        return $this->successResponse($data, 'Best client retrieved successfully');
     }
 
 }

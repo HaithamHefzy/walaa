@@ -14,6 +14,8 @@ class MembershipSettingService
 
     /**
      * Inject the MembershipSettingRepository.
+     *
+     * @param MembershipSettingRepository $membershipRepo
      */
     public function __construct(MembershipSettingRepository $membershipRepo)
     {
@@ -22,6 +24,9 @@ class MembershipSettingService
 
     /**
      * Retrieve all membership settings with optional pagination.
+     *
+     * @param int|null $perPage
+     * @return mixed
      */
     public function getAllMembershipSettings($perPage = null)
     {
@@ -29,26 +34,24 @@ class MembershipSettingService
     }
 
     /**
-     * Create a new membership setting.
-     */
-    public function createMembershipSetting(array $data)
-    {
-        return $this->membershipRepo->create($data);
-    }
-
-    /**
-     * Delete a membership setting by ID.
-     */
-    public function deleteMembershipSetting($id)
-    {
-        return $this->membershipRepo->delete($id);
-    }
-
-    /**
-     * Fetch the latest (or current) membership settings for usage.
+     * Retrieve the current (latest) membership settings.
+     *
+     * @return mixed
      */
     public function getCurrentSettings()
     {
         return $this->membershipRepo->currentSettings();
+    }
+
+    /**
+     * Update membership settings in one request.
+     * Expected input: ['platinum_visits' => X, 'gold_visits' => Y, 'silver_visits' => Z]
+     *
+     * @param array $data
+     * @return void
+     */
+    public function updateSettings(array $data): void
+    {
+        $this->membershipRepo->updateSettings($data);
     }
 }

@@ -10,7 +10,7 @@ class FeedbackManager extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'feedback_manager';
+    protected $table = 'feedback_managers';
     protected $fillable = [
         'name',
         'email',

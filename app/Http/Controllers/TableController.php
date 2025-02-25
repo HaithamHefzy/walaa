@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTableRequest;
+use App\Http\Controllers\Controller;
 use App\Services\TableService;
 use App\Http\Resources\TableResource;
 use App\Traits\ApiResponse;
@@ -10,7 +10,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Handles HTTP requests for tables.
+ * TableController
+ * Manages table operations including listing, creating multiple tables,
+ * deleting, and freeing a table.
  */
 class TableController extends Controller
 {
@@ -18,6 +20,11 @@ class TableController extends Controller
 
     protected TableService $tableService;
 
+    /**
+     * Inject the TableService into the controller.
+     *
+     * @param TableService $tableService
+     */
     public function __construct(TableService $tableService)
     {
         $this->tableService = $tableService;
@@ -25,26 +32,67 @@ class TableController extends Controller
 
     /**
      * GET /tables
+     * Retrieve all tables with optional pagination (?per_page=XX).
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         $perPage = $request->get('per_page');
         $tables = $this->tableService->getAllTables($perPage);
 
-        return $this->successResponse(TableResource::collection($tables), 'Tables retrieved successfully');
+        return $this->successResponse(
+            TableResource::collection($tables),
+            'Tables retrieved successfully'
+        );
     }
 
     /**
      * POST /tables
+     * Creates multiple tables in a single request.
+     * Expects a JSON body with "tables" as an array of objects.
+     *
+     * Example Body:
+     * {
+     *     "tables": [
+     *         { "room_number": 101, "table_capacity": 4, "table_number": 1, "status": "available" },
+     *         { "room_number": 102, "table_capacity": 6, "table_number": 2 }
+     *     ]
+     * }
+     *
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function store(StoreTableRequest $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        $table = $this->tableService->createTable($request->validated());
-        return $this->successResponse(new TableResource($table), 'Table created successfully', 201);
+        // 1) Validate the incoming request
+        $validated = $request->validate([
+            'tables'                       => 'required|array',
+            'tables.*.room_number'        => 'required|integer',
+            'tables.*.table_capacity'     => 'required|integer',
+            'tables.*.table_number'       => 'required|integer',
+            'tables.*.status'             => 'nullable|in:available,unavailable',
+        ]);
+
+        // 2) Create the tables via the service
+        $createdTables = $this->tableService->createMultiple($validated['tables']);
+
+        // 3) Return the newly created tables
+        return $this->successResponse(
+            TableResource::collection($createdTables),
+            'Tables created successfully',
+            201
+        );
     }
+
 
     /**
      * DELETE /tables/{id}
+     * Delete a table by its ID.
+     *
+     * @param int $id
+     * @return JsonResponse
      */
     public function destroy($id): JsonResponse
     {
@@ -56,7 +104,11 @@ class TableController extends Controller
     }
 
     /**
-     * Free the table (set status=available).
+     * POST /tables/{tableId}/free
+     * Free the table (set status to 'available').
+     *
+     * @param int $tableId
+     * @return JsonResponse
      */
     public function free($tableId): JsonResponse
     {

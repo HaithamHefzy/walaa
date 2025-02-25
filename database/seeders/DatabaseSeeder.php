@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         // Run Roles and Permissions Seeder
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(CallButtonSettingsSeeder::class);
-
+        $this->call(MembershipSettingsSeeder::class);
         // Create a test admin user if it doesn't exist
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@example.com'],

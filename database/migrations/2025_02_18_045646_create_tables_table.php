@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('tables', function (Blueprint $table) {
             $table->id();
-            $table->integer('room_number')->unique()->comment('Room number, unique identifier');
+            $table->integer('room_number')->comment('Room number, unique identifier');
             $table->integer('table_capacity')->comment('Capacity for the Table');
             $table->integer('table_number')->comment('Table number within the room');
             $table->enum('status', ['available', 'unavailable'])
