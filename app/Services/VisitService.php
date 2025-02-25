@@ -10,7 +10,7 @@ use App\Repositories\CallButtonSettingRepository;
 /**
  * VisitService
  * Encapsulates business logic for visits (waiting or direct),
- * including table assignment, call by button, and special call.
+ * including table assignment (if provided), call by button, and special call.
  */
 class VisitService
 {
@@ -18,7 +18,7 @@ class VisitService
     protected $callButtonRepo;
 
     /**
-     * Inject the VisitRepository and optionally the CallButtonSettingRepository.
+     * Inject the VisitRepository and the CallButtonSettingRepository.
      *
      * @param VisitRepository $visitRepo
      * @param CallButtonSettingRepository $callButtonRepo
@@ -73,10 +73,17 @@ class VisitService
         // 1) Create the visit record
         $visit = $this->visitRepo->create($data);
 
+        // 2) Calculate the waiting_number for today
+        $today = now()->format('Y-m-d');
+        $maxToday = Visit::whereDate('created_at', $today)->max('waiting_number');
+        $nextNumber = $maxToday ? $maxToday + 1 : 1;
+
+        // 3) Save the waiting_number in the visit
+        $visit->waiting_number = $nextNumber;
+        $visit->save();
 
         return $visit;
     }
-
 
     /**
      * Delete a visit by ID.
@@ -112,18 +119,14 @@ class VisitService
             return 'table_already_taken';
         }
 
-        // Check capacity
         if ($visit->number_of_people && $visit->number_of_people > $table->table_capacity) {
             return 'over_capacity';
         }
 
-        // Assign table
         $visit->table_id = $tableId;
-        // Optionally mark the visit as 'called' if that fits your logic
         $visit->status   = 'called';
         $visit->save();
 
-        // Mark table as unavailable
         $table->status = 'unavailable';
         $table->save();
 
@@ -132,32 +135,27 @@ class VisitService
 
     /**
      * Call by button (A, B, C, etc.).
-     * 1) table_id is required for a regular call.
-     * 2) Find the earliest waiting visit with number_of_people <= max_people.
-     * 3) Assign the table if it is available and capacity is sufficient.
-     * 4) Mark the visit as 'called'.
+     * This method finds the earliest waiting visit whose number_of_people falls within
+     * the dynamic range for the given button, and optionally assigns a table if table_id is provided.
+     * If table_id is not provided, it will simply mark the visit as 'called'.
      *
      * @param string $buttonType
-     * @param int|null $tableId
+     * @param int|null $tableId Optional table ID for assignment
      * @return array
      */
     public function callByButton(string $buttonType, $tableId = null)
     {
-        // 1) Ensure table_id is provided for a regular call
-        if (!$tableId) {
-            return ['status' => 'error', 'message' => 'Table assignment is required for regular call'];
-        }
-
-        // 2) Find the call button setting by button type (e.g., 'A', 'B', 'C')
+        // 1) Retrieve the call button setting by button type (e.g., 'A', 'B', 'C')
         $button = $this->callButtonRepo->findByButtonType($buttonType);
         if (!$button) {
             return ['status' => 'error', 'message' => "Button $buttonType not found"];
         }
 
-        // 3) Calculate dynamic range values manually (hardcoded)
-        // For button 'A': 1 to A's max_people
-        // For button 'B': (A's max_people + 1) to B's max_people
-        // For button 'C': (B's max_people + 1) to C's max_people
+        // 2) Determine the dynamic range for number_of_people based on button type.
+        // Hardcoded ranges:
+        // For 'A': range: 1 to A's max_people
+        // For 'B': range: (A's max_people + 1) to B's max_people
+        // For 'C': range: (B's max_people + 1) to C's max_people
         switch ($buttonType) {
             case 'A':
                 $minPeople = 1;
@@ -177,50 +175,61 @@ class VisitService
                 return ['status' => 'error', 'message' => "Unknown button type $buttonType"];
         }
 
-        // 4) Find the earliest waiting visit with number_of_people within the range
-        $visit = \App\Models\Visit::where('status', 'waiting')
+        // 3) Find the earliest waiting visit with number_of_people within the determined range
+        $visit = Visit::where('status', 'waiting')
             ->whereBetween('number_of_people', [$minPeople, $maxPeople])
             ->orderBy('created_at', 'asc')
             ->first();
 
         if (!$visit) {
-            return ['status' => 'error', 'message' => "No waiting visit found for button $buttonType"];
+            return ['status' => 'success', 'message' => "No waiting visit found for button $buttonType"];
         }
 
-        // 5) Check the table availability and capacity
-        $table = \App\Models\Table::find($tableId);
-        if (!$table || $table->status !== 'available') {
-            return ['status' => 'error', 'message' => "Table not available"];
-        }
-        if ($visit->number_of_people > $table->table_capacity) {
-            return ['status' => 'error', 'message' => "Table capacity is insufficient"];
+        // 4) If table_id is provided, check table availability and capacity, and assign the table.
+        if ($tableId) {
+            $table = Table::find($tableId);
+            if (!$table || $table->status !== 'available') {
+                return ['status' => 'error', 'message' => "Table not available"];
+            }
+            if ($visit->number_of_people > $table->table_capacity) {
+                return ['status' => 'error', 'message' => "Table capacity is insufficient"];
+            }
+            $visit->table_id = $tableId;
+            $table->status = 'unavailable';
+            $table->save();
         }
 
-        // 6) Assign the table to the visit and mark the table as unavailable
-        $visit->table_id = $tableId;
-        $table->status = 'unavailable';
-        $table->save();
-
-        // 7) Mark the visit as 'called' and save the changes
+        // 5) Mark the visit as 'called'
         $visit->status = 'called';
         $visit->save();
 
-        // 8) Build display label using buttonType and waiting_number, e.g. "A 1"
+        // 6) Build display label using buttonType and waiting_number, e.g., "A 1"
         $displayLabel = $buttonType . ' ' . $visit->waiting_number;
 
         return [
             'status'   => 'success',
             'visit_id' => $visit->id,
-            'message'  => "Visit {$displayLabel} called with table assignment"
+            'message'  => "Visit {$displayLabel} called" . ($tableId ? " with table assignment" : " with no table assignment")
         ];
     }
 
-
     /**
-     * Special call: skip the queue and call a specific visit by ID.
+     * Special call: Skip the queue and call a specific visit by ID.
      * Table assignment is optional.
      *
      * @param int $visitId
+     * @param int|null $tableId Optional table assignment
+     * @return array
+     */
+    /**
+     * Special call: Skip the queue and call a specific visit by ID.
+     * Table assignment is optional.
+     *
+     * This method builds a display label similar to a regular call,
+     * e.g., "Special 1 (3 people) - 15 minutes ago".
+     *
+     * @param int $visitId
+     * @param int|null $tableId Optional table assignment
      * @return array
      */
     public function specialCall($visitId, $tableId = null)
@@ -252,12 +261,16 @@ class VisitService
         $visit->status = 'called';
         $visit->save();
 
+        // Build display label similar to a regular call
+        // e.g., "Special 1 (3 people) - 15 minutes ago"
+        $timeSince = $visit->created_at ? $visit->created_at->diffForHumans() : '';
+        $displayLabel = "Special " . $visit->waiting_number . " (" . $visit->number_of_people . " people) - " . $timeSince;
+
         return [
-            'status' => 'success',
+            'status'   => 'success',
             'visit_id' => $visit->id,
-            'message' => "Visit #{$visit->id} called by special call"
+            'message'  => "Visit {$displayLabel} called by special call" . ($tableId ? " with table assignment" : "")
         ];
     }
-
 
 }

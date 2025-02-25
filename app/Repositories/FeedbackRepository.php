@@ -3,22 +3,60 @@
 namespace App\Repositories;
 
 use App\Models\Feedback;
+use Carbon\Carbon;
 
+/**
+ * FeedbackRepository
+ * Handles direct database operations for the Feedback model.
+ */
 class FeedbackRepository
 {
     /**
-     * Retrieve all feedbacks
+     * Retrieve feedback with optional pagination (no filters).
      */
-    public function all($perPage = null)
+    public function all($perPage)
     {
         $query = Feedback::latest();
 
         if (is_null($perPage)) {
-            // If no per_page provided, just get all
             return $query->get();
         }
 
         return $query->paginate($perPage);
+    }
+
+    /**
+     * Filter feedback by date range, rating, etc.
+     *
+     * @param string|null $startDate
+     * @param string|null $endDate
+     * @param string|null $rating
+     * @param int|null    $perPage
+     * @return mixed
+     */
+    public function filter($startDate, $endDate, $rating, $perPage)
+    {
+        $query = Feedback::latest();
+
+        // Date range filter
+        if ($startDate && $endDate) {
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end   = Carbon::parse($endDate)->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        // Rating filter
+        if ($rating) {
+            $query->where('rating', $rating);
+        }
+
+        // If you have other filters, add them here
+
+        // Pagination
+        if ($perPage) {
+            return $query->paginate($perPage);
+        }
+        return $query->get();
     }
 
     /**

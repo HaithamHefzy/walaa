@@ -6,49 +6,47 @@ use App\Models\MembershipSetting;
 
 /**
  * MembershipSettingRepository
- * Handles direct database operations for MembershipSetting model.
+ * Handles direct database operations for the MembershipSetting model.
  */
 class MembershipSettingRepository
 {
     /**
      * Retrieve all membership settings with optional pagination.
+     *
+     * @param int|null $perPage
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function all($perPage)
+    public function all($perPage = null)
     {
         $query = MembershipSetting::latest();
         return is_null($perPage) ? $query->get() : $query->paginate($perPage);
     }
 
     /**
-     * Create a new membership setting record.
-     */
-    public function create(array $data)
-    {
-        return MembershipSetting::create($data);
-    }
-
-    /**
-     * Delete a membership setting by ID.
-     */
-    public function delete($id)
-    {
-        $setting = MembershipSetting::find($id);
-        return $setting ? $setting->delete() : false;
-    }
-
-    /**
-     * Find a membership setting by ID.
-     */
-    public function find($id)
-    {
-        return MembershipSetting::find($id);
-    }
-
-    /**
-     * fetch the latest (or current) membership setting record.
+     * Fetch the latest (or current) membership settings record.
+     *
+     * @return MembershipSetting|null
      */
     public function currentSettings()
     {
         return MembershipSetting::latest()->first();
+    }
+
+    /**
+     * Update the membership settings.
+     * Assumes there is only one record (ID = 1) holding the settings.
+     *
+     * @param array $data
+     * @return void
+     */
+    public function updateSettings(array $data): void
+    {
+        $setting = MembershipSetting::find(1);
+        if ($setting) {
+            $setting->platinum_visits = $data['platinum_visits'];
+            $setting->gold_visits     = $data['gold_visits'];
+            $setting->silver_visits   = $data['silver_visits'];
+            $setting->save();
+        }
     }
 }
