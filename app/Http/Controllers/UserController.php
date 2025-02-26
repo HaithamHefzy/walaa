@@ -43,6 +43,14 @@ class UserController extends Controller
 
         $user = $this->userService->createUser($request->validated());
 
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'new_user_id' => $user->id
+            ])
+            ->log('إضافة مستخدم جديد');
+
         return $this->successResponse(new UserResource($user), 'User created successfully', 201);
     }
 

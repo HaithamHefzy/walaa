@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController,
+use App\Http\Controllers\{ActivityLogController,
+    AuthController,
     CallButtonSettingController,
     ClientController,
     DashboardController,
@@ -124,4 +125,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Reports Endpoint
     Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
+
+    Route::get('activity-logs', [ActivityLogController::class, 'index'])
+        ->name('activity-logs.index');
 });

@@ -89,6 +89,11 @@ class MembershipSettingController extends Controller
         // Update the membership settings using the service
         $this->membershipService->updateSettings($validated);
 
+        activity()
+            ->causedBy(auth()->user())
+            ->withProperties($validated)
+            ->log('إعدادات النظام تم تحديثها');
+
         // Retrieve the updated membership setting record
         $updatedSetting = $this->membershipService->getCurrentSettings();
 

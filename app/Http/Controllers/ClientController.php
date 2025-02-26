@@ -83,9 +83,21 @@ class ClientController extends Controller
         $maxToday = Visit::whereDate('created_at', $today)->max('waiting_number');
         $nextNumber = $maxToday ? $maxToday + 1 : 1;
 
-        // Save the waiting_number in the visit
+        // Save the waiting_number in the visit and update the record
         $visit->waiting_number = $nextNumber;
         $visit->save();
+
+        // Log the creation event with Spatie Activity Log,
+        // including the waiting number and client name in Arabic.
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($visit)
+            ->withProperties([
+                'client_id'      => $client->id,
+                'visit_id'       => $visit->id,
+                'waiting_number' => $nextNumber,
+            ])
+            ->log('تم استدعاء العميل: ' . $client->name . ' عبر النظام');
 
         // Return combined response with client and visit data using resources
         return $this->successResponse(
@@ -124,6 +136,10 @@ class ClientController extends Controller
         $deleted = $this->clientService->deleteClient($id);
 
         if ($deleted) {
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties(['client_id' => $id])
+                ->log('Client was deleted');
             return $this->successResponse(null, 'Client deleted successfully', 200);
         }
         return $this->errorResponse('Client not found', 404);

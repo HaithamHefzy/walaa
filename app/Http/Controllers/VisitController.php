@@ -86,7 +86,12 @@ class VisitController extends Controller
     {
         $deleted = $this->visitService->deleteVisit($id);
 
+
         if ($deleted) {
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties(['visit_id' => $id])
+                ->log('Visit was deleted');
             return $this->successResponse(null, 'Visit deleted successfully', 200);
         }
         return $this->errorResponse('Visit not found', 404);
@@ -143,12 +148,35 @@ class VisitController extends Controller
         $tableId = $request->input('table_id');
         $result = $this->visitService->callByButton($buttonType, $tableId);
 
+        // If there's an error, return early
         if ($result['status'] === 'error') {
             return $this->errorResponse($result['message'], 400);
         }
 
+        // Assuming $result has 'visit_id' when the call is successful
+        $visitId = $result['visit_id'] ?? null;
+
+        // If we have a visit_id, find the Visit model
+        if ($visitId) {
+            $visit = \App\Models\Visit::find($visitId);
+
+            // Extract client name if the visit has a client
+            $clientName = $visit->client ? $visit->client->name : 'غير معروف';
+
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($visit)
+                ->withProperties([
+                    'visit_id'   => $visit->id,
+                    'button_type'=> $buttonType,
+                ])
+                ->log("استدعاء العميل: {$clientName} عبر الزر {$buttonType}");
+        }
+
         return $this->successResponse(null, $result['message'], 200);
     }
+
+
 
     /**
      * POST /visits/special-call/{visitId}
@@ -167,12 +195,32 @@ class VisitController extends Controller
         $tableId = $request->input('table_id');
         $result = $this->visitService->specialCall($visitId, $tableId);
 
+        // If there's an error, return it immediately
         if ($result['status'] === 'error') {
             return $this->errorResponse($result['message'], 400);
         }
 
+        // Extract the visit_id from the result and retrieve the visit model
+        $visitIdResult = $result['visit_id'] ?? null;
+        if ($visitIdResult) {
+            $visit = \App\Models\Visit::find($visitIdResult);
+
+            // Get client name if visit has a client
+            $clientName = $visit->client ? $visit->client->name : 'غير معروف';
+
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($visit)
+                ->withProperties([
+                    'visit_id' => $visitIdResult,
+                ])
+                ->log("استدعاء خاص للعميل: {$clientName}");
+        }
+
         return $this->successResponse(null, $result['message'], 200);
     }
+
+
 
     /**
      * GET /visits/waiting

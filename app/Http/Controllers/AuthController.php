@@ -24,6 +24,13 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
+
+        activity()
+            ->causedBy($user)
+            ->withProperties([
+                'username' => $user->name,
+            ])
+            ->log('تسجيل دخول للسيستم');
         return $this->respondWithToken($token, $user, 'Login successful');
     }
 
