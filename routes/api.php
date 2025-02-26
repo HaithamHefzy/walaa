@@ -15,7 +15,10 @@ use App\Http\Controllers\{AuthController,
     GiftController,
     DiscountCodeController,
     CouponsController,
-    VisitController};
+    VisitController,
+    CalendarController,
+    MessageController,
+    MessageSettingController};
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -39,6 +42,13 @@ Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('discount-codes',DiscountCodeController::class);
     Route::apiResource('coupons',CouponsController::class);
     Route::post('use-coupons',[CouponsController::class,'useTheCoupon'])->name('coupons.use');
+
+    //marketing
+    Route::apiResource('marketing-calendars',CalendarController::class);
+    Route::get('marketing-calendars-finished',[CalendarController::class,'finished'])->name('calendars.finished');
+    Route::get('marketing-calendars-coming',[CalendarController::class,'coming'])->name('calendars.coming');
+    Route::apiResource('marketing-messages',MessageController::class);
+    Route::apiResource('marketing-messages-settings',MessageSettingController::class);
 
     // Client Endpoints (clients are used, not customers)
     Route::apiResource('clients', ClientController::class)->only(['index','store','destroy','show']);

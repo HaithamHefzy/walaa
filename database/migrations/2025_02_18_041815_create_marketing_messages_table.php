@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('message_body');
             $table->string('attachment_path')->nullable();
             $table->enum('send_to', ['all', 'custom'])->default('all');
-            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
+            $table->string('client_ids')->nullable();
             $table->dateTime('schedule_time')->nullable();
             $table->boolean('sent_now')->default(false);
             $table->enum('delivery_method', ['whatsapp', 'sms', 'email']);
