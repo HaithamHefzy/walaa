@@ -27,7 +27,7 @@ return new class extends Migration
 
             // Type of visit: direct or waiting
             $table->enum('source', ['direct', 'waiting'])->default('waiting')->comment('Direct entry or waiting list');
-
+            $table->integer('waiting_number')->nullable();
             // Status of the visit: waiting, called, done
             $table->enum('status', ['waiting', 'called', 'done'])->default('waiting')->comment('Current status of the visit');
 
