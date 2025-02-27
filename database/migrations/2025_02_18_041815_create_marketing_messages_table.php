@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('client_ids')->nullable();
             $table->dateTime('schedule_time')->nullable();
             $table->boolean('sent_now')->default(false);
-            $table->enum('delivery_method', ['whatsapp', 'sms', 'email']);
+            $table->text('delivery_method')->nullable();
             $table->enum('status', ['pending', 'sent', 'failed'])->default('pending');
             $table->timestamps();
             $table->softDeletes();

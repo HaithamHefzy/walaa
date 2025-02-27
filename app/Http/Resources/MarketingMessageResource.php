@@ -23,7 +23,7 @@ class MarketingMessageResource extends JsonResource
             'client_ids' => $this->send_to == 'all' ? NULL : json_decode($this->client_ids),
             'schedule_time' => $this->schedule_time,
             'sent_now' => $this->sent_now,
-            'delivery_method' => $this->delivery_method,
+            'delivery_method' => json_decode($this->delivery_method) ?? $this->delivery_method,
             'status' => $this->status ?? 'pending'
         ];
     }

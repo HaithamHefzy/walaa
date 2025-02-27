@@ -16,13 +16,22 @@ class GiftResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'gift_code_id' => $this->gift_code_id,
+            'gift_code' => [
+                'id' => $this->giftCode?->id,
+                'code' => $this->giftCode?->code,
+                'discount_type' => $this->giftCode?->discount_type,
+                'discount_value' => $this->giftCode?->discount_value,
+                'validity_days' => $this->giftCode?->validity_days,
+                'validity_after_hours' => $this->giftCode?->validity_after_hours
+            ],
             'client_name' => $this->client_name,
             'client_phone' => $this->client_phone,
             'friend_name' => $this->friend_name,
             'friend_phone' => $this->friend_phone,
             'message' => $this->message,
-            'is_redeemed' => $this->is_redeemed ?? 0
+            'is_redeemed' => $this->is_redeemed ?? 0,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }

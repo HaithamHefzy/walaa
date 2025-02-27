@@ -15,6 +15,7 @@ class MarketingMessageRepository
     public function createMarketingMessage(array $data)
     {
         $data['client_ids'] = is_array($data['client_ids']) ? json_encode($data['client_ids']) : $data['client_ids'];
+        $data['delivery_method'] = is_array($data['delivery_method']) ? json_encode($data['delivery_method']) : $data['delivery_method'];
         $data['attachment_path'] = isset($data['attachment_path']) ? HandleUpload::uploadFile($data['attachment_path'],'attachments') : NULL;
         return MarketingMessage::create($data);
     }

@@ -28,7 +28,8 @@ class UpdateMarketingMessageRequest extends FormRequest
             'client_ids' => 'required_if:send_to,custom',
             'schedule_time' => 'required|date_format:Y-m-d H:i:s',
             'sent_now' => 'required|numeric',
-            'delivery_method' => 'required|in:whatsapp,sms,email'
+            'delivery_method' => 'required|array',
+            'delivery_method.*' => 'in:whatsapp,sms,email'
         ];
     }
 }
