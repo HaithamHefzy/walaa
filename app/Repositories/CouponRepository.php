@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Coupon;
 use Carbon\Carbon;
+use App\Helpers\SendMessageHelper;
 
 class CouponRepository
 {
@@ -20,7 +21,11 @@ class CouponRepository
      */
     public function createCoupon(array $data)
     {
-        return Coupon::create($data);
+        $coupon = Coupon::create($data);
+
+        SendMessageHelper::SendMessage($coupon->friend_phone,'Your frient' . $coupon->recipient_phone . ' has sent you a discount coupon ' . $coupon->discountCode?->code);
+
+        return $coupon;
     }
 
     /**

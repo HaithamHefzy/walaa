@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Gift;
 use Carbon\Carbon;
+use App\Helpers\SendMessageHelper;
 
 class GiftRepository
 {
@@ -20,7 +21,11 @@ class GiftRepository
      */
     public function createGift(array $data)
     {
-        return Gift::create($data);
+        $gift = Gift::create($data);
+
+        SendMessageHelper::SendMessage($gift->friend_phone,'Your frient' . $gift->client_name . ' has sent you a gift code ' . $gift->giftCode?->code);
+
+        return $gift;
     }
 
     /**

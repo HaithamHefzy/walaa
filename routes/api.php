@@ -18,7 +18,9 @@ use App\Http\Controllers\{AuthController,
     VisitController,
     CalendarController,
     MessageController,
-    MessageSettingController};
+    MessageSettingController,
+    NumberListController,
+    SendMessageController};
 
 // Authentication Routes
 Route::post('/login', [AuthController::class, 'login']);
@@ -49,6 +51,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('marketing-calendars-coming',[CalendarController::class,'coming'])->name('calendars.coming');
     Route::apiResource('marketing-messages',MessageController::class);
     Route::apiResource('marketing-messages-settings',MessageSettingController::class);
+    Route::apiResource('number-lists',NumberListController::class);
+    Route::post('send-message',[SendMessageController::class,'sendMessage'])->name('messages.send');
 
     // Client Endpoints (clients are used, not customers)
     Route::apiResource('clients', ClientController::class)->only(['index','store','destroy','show']);
