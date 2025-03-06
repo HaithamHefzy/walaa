@@ -10,11 +10,15 @@ class SendMessageController extends Controller
     public function sendMessage(Request $request)
     {
         $request->validate([
-            'mobile_number' => 'required',
-            'message' => 'required'
+            'person_name' => 'required',
+            'mobile_number' => 'required'
         ]);
+
+        $menu = asset('menu.jpg');
+
+        $message = "Welcome " . $request->person_name . ', this is the link to our menu ' . $menu;
         
-        $response = SendMessageHelper::SendMessage($request->mobile_number,$request->message);
+        $response = SendMessageHelper::SendMessage($request->mobile_number,$message);
         
         if ($response->successful()) {
             return response()->json(['message' => 'Message sent successfully']);
