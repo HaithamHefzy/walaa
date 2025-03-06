@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\SendMessageHelper;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 
 class SendMessageController extends Controller
 {
@@ -14,7 +16,9 @@ class SendMessageController extends Controller
             'mobile_number' => 'required'
         ]);
 
-        $menu = asset('menu.jpg');
+        $link = Setting::first()?->menu_image ?? NULL;
+
+        $menu = Storage::disk('public')->url($link);
 
         $message = "Welcome " . $request->person_name . ', this is the link to our menu ' . $menu;
         

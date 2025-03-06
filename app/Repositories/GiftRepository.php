@@ -23,7 +23,7 @@ class GiftRepository
     {
         $gift = Gift::create($data);
 
-        SendMessageHelper::SendMessage($gift->friend_phone,'Your frient' . $gift->client_name . ' has sent you a gift code ' . $gift->giftCode?->code);
+        SendMessageHelper::SendMessage($gift->friend_phone,'Your friend ' . $gift->client_name . ' has sent you a gift code ' . $gift->giftCode?->code . ' ' . $gift->message);
 
         return $gift;
     }

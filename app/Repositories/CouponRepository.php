@@ -23,7 +23,7 @@ class CouponRepository
     {
         $coupon = Coupon::create($data);
 
-        SendMessageHelper::SendMessage($coupon->friend_phone,'Your frient' . $coupon->recipient_phone . ' has sent you a discount coupon ' . $coupon->discountCode?->code);
+        SendMessageHelper::SendMessage($coupon->friend_phone,'Your friend ' . $coupon->recipient_phone . ' has sent you a discount coupon ' . $coupon->discountCode?->code);
 
         return $coupon;
     }

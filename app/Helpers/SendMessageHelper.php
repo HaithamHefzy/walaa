@@ -10,17 +10,20 @@ class SendMessageHelper
     {
         $tenantId = '114046';
         $accessToken = env('MOBILE_TOKEN');
-        $apiUrl = "https://live-mt-server.wati.io/{$tenantId}/api/v1/sendTemplateMessage/{$mobile}";
+        $apiUrl = "https://live-mt-server.wati.io/{$tenantId}/api/v1/sendTemplateMessage?whatsappNumber=$mobile";
+
+        $payload = [
+            "template_name"  => "walaa4",
+            "broadcast_name" => "string",
+            "parameters"   => [["name"  => "name","value" => $message]]
+        ];
 
         $response = Http::withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => "Bearer $accessToken"
-        ])->post($apiUrl, [
-            "template_name" => "test10",
-            "broadcast_name" =>  "string",
-            'message' => $message
-        ]);
-
+            'Authorization' => 'Bearer ' . env('MOBILE_TOKEN'),
+            'Content-Type'  => 'application/json',
+            'Accept'        => 'application/json',
+        ])->post($apiUrl, $payload);
+        
         return $response;
     }
 }
