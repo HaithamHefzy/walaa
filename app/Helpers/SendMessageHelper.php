@@ -9,7 +9,6 @@ class SendMessageHelper
     public static function SendMessage($mobile,$message)
     {
         $tenantId = '114046';
-        $mobile = $mobile;
         $accessToken = env('MOBILE_TOKEN');
         $apiUrl = "https://live-mt-server.wati.io/{$tenantId}/api/v1/sendTemplateMessage/{$mobile}";
 
