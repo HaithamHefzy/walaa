@@ -32,8 +32,6 @@ class MarketingMessageRepository
             $message =  $data['message_body'] . " " . $link;
 
             $response = SendMessageHelper::SendMessage($client->phone,$message);
-
-            dd($response->json());
         }
         
         return MarketingMessage::create($data);
