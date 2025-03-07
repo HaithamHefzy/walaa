@@ -48,4 +48,15 @@ class NumberListController extends Controller
 
         return $this->successResponse(new NumberListResource($list), 'List created successfully', 201);
     }
+
+    public function destroy($number_list_id)
+    {
+        $number_list = NumberList::find($number_list_id);
+        if($number_list)
+        {
+            $number_list->delete();
+            return $this->successResponse([],'List created successfully', 201);
+        }
+        return $this->errorResponse('wrong id!', 401);
+    }
 }

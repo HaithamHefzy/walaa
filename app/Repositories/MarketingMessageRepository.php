@@ -6,6 +6,7 @@ use App\Models\MarketingMessage;
 use App\Helpers\HandleUpload;
 use App\Models\Client;
 use App\Helpers\SendMessageHelper;
+use Illuminate\Support\Facades\Storage;
 
 class MarketingMessageRepository
 {
@@ -21,11 +22,18 @@ class MarketingMessageRepository
         $data['delivery_method'] = is_array($data['delivery_method']) ? json_encode($data['delivery_method']) : $data['delivery_method'];
         $data['attachment_path'] = isset($data['attachment_path']) ? HandleUpload::uploadFile($data['attachment_path'],'attachments') : NULL;
 
+        $ids = is_array($ids) ? $ids : [$ids];
         $clients = $data['send_to'] == 'all' ? Client::all() : Client::whereIn('id',$ids)->get();
 
         foreach($clients ?? [] as $client)
         {
-            SendMessageHelper::SendMessage($client->phone,$data['message_body']);
+            $link = isset($data['attachment_path']) ? Storage::disk('public')->url($data['attachment_path']) : NULL;
+
+            $message =  $data['message_body'] . " " . $link;
+
+            $response = SendMessageHelper::SendMessage($client->phone,$message);
+
+            dd($response->json());
         }
         
         return MarketingMessage::create($data);
