@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Resources\NumberListResource;
+use App\Http\Resources\{NumberListResource,NumberListCollectionResource};
 use App\Traits\ApiResponse;
 use App\Models\{NumberList,Number};
 use App\Http\Requests\Number\NumberRequest;
@@ -17,10 +17,7 @@ class NumberListController extends Controller
     {
         $lists = NumberList::paginate($request->limit ?? 10);
 
-        return $this->successResponse(
-            NumberListResource::collection($lists),
-            'Numbers retrieved successfully'
-        );
+        return $this->successResponse(new NumberListCollectionResource($lists),'Numbers retrieved successfully');
     }
 
     public function store(NumberRequest $numberRequest)
